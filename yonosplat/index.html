@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="YoNoSplat: You Only Need One Model for Feedforward 3D Gaussian Splatting">
+  <meta name="keywords" content="Gaussian Splatting, Novel View Synthesis, 3D Reconstruction, Pose-Free Reconstruction">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="static/css/bootstrap-4.4.1.css" rel="stylesheet">
+  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="./assets/icon.svg"> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://botaoye.github.io">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          Related Projects
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://noposplat.github.io/">
+            NoPoSplat - ICLR 2025 (Oral)
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<title>YoNoSplat</title>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h2 class="title is-2 publication-title" style="margin-bottom: 0"><strong>YoNoSplat: You Only Need One Model for<br>Feedforward 3D Gaussian Splatting</strong></h2>
+
+          <div class="column is-full_width">
+          </div>
+          
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://botaoye.github.io/">Botao Ye</a><sup>1,2</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+            <span class="author-block">
+              <a href="https://github.com/boqchen/">Boqi Chen</a><sup>1,2</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+            <span class="author-block">
+              <a href="https://haofeixu.github.io/">Haofei Xu</a><sup>1</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block">
+              <a href="https://cvg.ethz.ch/team/Dr-Daniel-Bela-Barath">Daniel Barath</a><sup>1</sup></span>&nbsp;&nbsp;&nbsp;&nbsp;
+              <a href="https://people.inf.ethz.ch/marc.pollefeys/">Marc Pollefeys</a><sup>1,3</sup>
+            </span>
+          </div>
+
+          <!-- <br> -->
+
+          <!-- <div class="column is-full_width">
+            <h2 class="title is-4">CVPR 2025</h2>
+          </div> -->
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>ETH Zurich</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block"><sup>2</sup>ETH AI Center</span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block"><sup>3</sup>Microsoft</span>&nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2510.08575"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/cvg/yonosplat"
+                   class="external-link button is-normal is-rounded is-dark disabled"
+                   style="background-color: #d3d3d3; color: #333; pointer-events: none;">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code Release: Dec 2025</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="./assets/yonosplat_teaser.png" class="center">
+      <h2 class="subtitle has-text-centered" style="margin-top: 15px">
+        <b>YoNoSplat reconstructs 3D Gaussian splats directly from unposed and uncalibrated images, while flexibly leveraging ground-truth camera poses or intrinsics when available.</b> <br>
+        <p style="font-size: 19px; margin-top: 15px;">
+          <img src="./assets/work-in-progress.png" alt="Work in progress" style="height: 28px; vertical-align: middle; margin-right: 8px;">
+          The project page is still under construction (stay tuned!).
+        </p>
+        <!-- <p style="font-size: 19px;">ReSplat is able to benefit from additional test-time compute with more iterations.</p> -->
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel" data-slides-to-show="2">
+        <div class="item item-video1">
+          <video poster="" id="video1" autoplay controls muted loop height="100%">
+            <source src="assets/video/dl3dv_scene1.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video2">
+          <video poster="" id="video2" autoplay controls muted loop height="100%">
+            <source src="assets/video/dl3dv_1d6a9.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video3">
+          <video poster="" id="video3" autoplay controls muted loop height="100%">
+            <source src="assets/video/dl3dv_374ff.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video4">
+          <video poster="" id="video4" autoplay controls muted loop height="100%">
+            <source src="assets/video/dl3dv_e9360.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video5">
+          <video poster="" id="video5" autoplay controls muted loop height="100%">
+            <source src="assets/video/dl3dv_eb4cf.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video6">
+          <video poster="" id="video6" autoplay controls muted loop height="100%">
+            <source src="assets/video/re10k_0f12b97e0e4c7e21.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video7">
+          <video poster="" id="video7" autoplay controls muted loop height="100%">
+            <source src="assets/video/re10k_1a0f8c49b336ec38.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video8">
+          <video poster="" id="video8" autoplay controls muted loop height="100%">
+            <source src="assets/video/re10k_2c02607ae436a9fb.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video9">
+          <video poster="" id="video9" autoplay controls muted loop height="100%">
+            <source src="assets/video/scannetpp_320v_scene1.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+        <div class="item item-video10">
+          <video poster="" id="video10" autoplay controls muted loop height="100%">
+            <source src="assets/video/scannetpp_320v_scene2.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+          
+      </div>
+    </div>
+  </div>
+   	<div align="center" style="padding-bottom: 30px;">
+      <b>Pose-free, feed-forward novel view synthesis on unseen scenes with varying numbers of input views.</b>
+	</div>
+</section>
+
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title" style="margin-top: 0px">BibTeX</h2>
+    <pre><code>@article{yonosplat,
+      title={YoNoSplat: You Only Need One Model for Feedforward 3D Gaussian Splatting},
+    }</code></pre>
+  </div>
+</section>
+
+
+<!-- footnote -->
+<table width="100%" align="center" border="0" cellspacing="0" cellpadding="20">
+  <tr>
+    <td>
+      <br>
+      <p align="center">
+        <font size="2">
+          <a href="https://github.com/nerfies/nerfies.github.io">
+            <font size="2" color="lightgray">awesome webpage template</font>
+          </a>
+          <br>
+        </font>
+      </p>
+      <br>
+    </td>
+  </tr>
+</table>
+
+
+</body>
+</html>
