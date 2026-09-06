@@ -1,0 +1,142 @@
+/* OmniPoint project page — overrides on top of the shared Bulma template.
+   Palette matches the ECCV poster: navy #24384F, teal #0F7A8A. */
+
+:root {
+  --navy: #24384f;
+  --teal: #0f7a8a;
+  --tint: #e0eff1;
+  --rule: #d4dae0;
+}
+
+.publication-title { color: var(--navy); }
+
+.venue-badge {
+  display: inline-block;
+  margin: 0.35rem 0 0.9rem;
+  padding: 0.35rem 1.1rem;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--navy);
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.author-note {
+  color: #6b7683;
+  font-size: 0.95rem;
+  margin-top: 0.35rem;
+}
+
+/* three headline claims under the teaser */
+.claims { display: flex; flex-wrap: wrap; gap: 1.1rem; justify-content: center; }
+.claim {
+  flex: 1 1 240px;
+  max-width: 320px;
+  background: var(--tint);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  text-align: center;
+}
+.claim .claim-value {
+  font-family: 'Google Sans', sans-serif;
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1.1;
+}
+.claim .claim-label { color: var(--navy); font-size: 0.95rem; margin-top: 0.3rem; }
+
+.section-lead {
+  color: #4a5560;
+  max-width: 52rem;
+  margin: 0 auto 1.6rem;
+  text-align: center;
+}
+
+figure.fig { margin: 0 0 1.2rem; }
+figure.fig img { width: 100%; border-radius: 6px; }
+figure.fig figcaption {
+  color: #6b7683;
+  font-size: 0.92rem;
+  margin-top: 0.7rem;
+  text-align: center;
+}
+
+/* the ray-vs-planar-depth diagram */
+.idea-diagram { width: 100%; max-width: 46rem; margin: 0 auto 1.4rem; display: block; }
+
+.takeaway {
+  border-left: 4px solid var(--teal);
+  padding: 0.15rem 0 0.15rem 1rem;
+  margin: 1.1rem auto;
+  max-width: 52rem;
+  color: #35414d;
+}
+
+/* result tables */
+.table-wrap { overflow-x: auto; max-width: 100%; margin-bottom: 0.6rem; }
+table.results {
+  border-collapse: collapse;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+table.results th,
+table.results td { padding: 0.42rem 0.85rem; text-align: center; white-space: nowrap; }
+table.results th:first-child,
+table.results td:first-child { text-align: left; }
+table.results thead tr:first-child th { border-top: 2px solid var(--navy); }
+table.results thead tr:last-child th { border-bottom: 1.5px solid var(--navy); }
+table.results thead th { background: #f2f4f7; color: var(--navy); font-weight: 600; }
+table.results tbody tr:last-child td { border-bottom: 2px solid var(--navy); }
+table.results tr.ours td { background: var(--tint); font-weight: 600; }
+table.results tr.ours td:not(:first-child) { color: var(--teal); }
+table.results tr.rule-above td { border-top: 1px solid var(--rule); }
+table.results .best { font-weight: 700; }
+table.results .yes { color: var(--teal); font-weight: 700; }
+table.results .no { color: #a0abb8; }
+table.results col.highlight { background: var(--tint); }
+.table-note {
+  color: #6b7683;
+  font-size: 0.88rem;
+  text-align: center;
+  margin-bottom: 2.2rem;
+}
+
+/* Display equations are wider than a phone; let them scroll rather than
+   widening the whole document. */
+mjx-container[display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding-bottom: 2px;
+}
+
+@media screen and (max-width: 768px) {
+  .claim { max-width: none; }
+  table.results { font-size: 0.85rem; }
+  table.results th, table.results td { padding: 0.36rem 0.55rem; }
+}
+
+/* The BibTeX block is the one thing wider than a phone; wrap it instead of
+   letting it widen the document. */
+#bibtex pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+#bibtex pre code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* The teaser container is a direct flex child of .hero, so it needs min-width:0
+   to be allowed to shrink below its content's intrinsic width on small screens. */
+.hero.teaser > .container {
+  min-width: 0;
+  max-width: 100%;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+figure.fig { min-width: 0; }

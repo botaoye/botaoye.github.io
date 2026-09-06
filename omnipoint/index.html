@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OmniPoint: Universal Monocular Metric Pointcloud from Any Camera</title>
+  <meta name="description" content="OmniPoint (ECCV 2026) reconstructs metric 3D point clouds from a single image taken by any camera — pinhole, fisheye or 360° panorama — and optionally consumes camera intrinsics and sparse depth.">
+
+  <meta property="og:title" content="OmniPoint: Universal Monocular Metric Pointcloud from Any Camera">
+  <meta property="og:description" content="One model, any camera, metric 3D. ECCV 2026.">
+  <meta property="og:image" content="assets/fig_teaser.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="stylesheet" href="./static/css/omnipoint.css">
+  <link rel="icon" href="./assets/favicon/favicon.ico">
+  <link rel="apple-touch-icon" href="./assets/favicon/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+</head>
+<body>
+
+<!-- ======================================================== hero ======= -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">OmniPoint</h1>
+          <h2 class="title is-3 publication-title">Universal Monocular Metric Pointcloud from Any Camera</h2>
+          <div class="venue-badge">ECCV 2026</div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://botaoye.github.io/">Botao Ye</a><sup>1,2</sup>,</span>
+            <span class="author-block">
+              <a href="https://people.inf.ethz.ch/pomarc">Marc Pollefeys</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://faculty.ucmerced.edu/mhyang/">Ming-Hsuan Yang</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://abhijitkundu.info/">Abhijit Kundu</a><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Google DeepMind</span> &nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="author-block"><sup>2</sup>ETH Zurich</span>
+          </div>
+          <div class="author-note">Work done during an internship at Google DeepMind.</div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="./assets/OmniPoint_ECCV2026_paper.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="./assets/OmniPoint_ECCV2026_poster.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-image"></i></span>
+                  <span>Poster</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#bibtex"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-quote-left"></i></span>
+                  <span>BibTeX</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== teaser ======== -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <figure class="fig">
+      <img src="./assets/fig_teaser.jpg"
+           alt="OmniPoint results on pinhole, fisheye and 360 degree images: input images, predicted depth maps and reconstructed metric point clouds.">
+      <figcaption>
+        One set of weights reconstructs metric 3D point clouds from a single image —
+        pinhole, fisheye or 360° panorama — with camera intrinsics and sparse depth
+        accepted as optional conditions.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================================================ headline claims ==== -->
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="claims">
+        <div class="claim">
+          <div class="claim-value">6.66</div>
+          <div class="claim-label">fisheye point Rel&darr;<br>UniK3D 11.5</div>
+        </div>
+        <div class="claim">
+          <div class="claim-value">5.79</div>
+          <div class="claim-label">360° depth Rel&darr;<br>DA<sup>2</sup> 6.65</div>
+        </div>
+        <div class="claim">
+          <div class="claim-value">83.5</div>
+          <div class="claim-label">metric &delta;<sub>1</sub> mean<br>best image-only</div>
+        </div>
+        <div class="claim">
+          <div class="claim-value">98.0</div>
+          <div class="claim-label">metric &delta;<sub>1</sub> mean<br>with sparse depth</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================== abstract ======== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Recovering metric 3D geometry from monocular images is a fundamental computer
+            vision task, yet current methods remain heavily fragmented by fixed camera model
+            assumptions and inflexible input schemes. We present <b>OmniPoint</b>, a unified
+            framework designed to generalize metric reconstruction across diverse imaging
+            sensors, including pinhole, fisheye, and equirectangular projections, while
+            accommodating varying geometric priors. To overcome projection rigidity, OmniPoint
+            abandons conventional planar depth regression. It instead adopts a
+            <b>decoupled ray and distance representation</b> alongside a decoupled training
+            objective, explicitly separating the camera projection model from the scene
+            structure. To address the severe scarcity of training data for alternative cameras,
+            we introduce a <b>bidirectional augmentation</b> strategy that explicitly bridges
+            labeled perspective data and unlabeled omnidirectional domains in 3D space.
+            Furthermore, to seamlessly integrate optional inputs like camera intrinsics or
+            sparse depth without destabilizing the network through feature distribution shifts,
+            we propose a <b>robust information injection mechanism</b>. This mechanism utilizes
+            learnable input state embeddings to resolve architectural ambiguity and applies
+            vectorized Gaussian smoothing to densify irregular measurements. Extensive
+            experiments demonstrate that OmniPoint achieves state-of-the-art zero-shot
+            performance across multiple benchmarks, establishing a robust new standard for
+            unified monocular 3D reconstruction.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================== core idea ======== -->
+<section class="section" style="padding-top:0">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Camera-agnostic ray + distance</h2>
+    <p class="section-lead">
+      Both usual prediction targets are tied to the camera. Planar depth <i>z</i> assumes a
+      linear pixel&rarr;ray map, diverges as the field of view approaches 180°, and is
+      undefined behind the camera; raw <i>(x, y, z)</i> forces one network to memorise a
+      different projection for every camera type. We predict a unit ray
+      <b>r</b> and a radial distance <i>d</i> instead: the ray absorbs all camera geometry,
+      the distance carries pure scene structure.
+    </p>
+
+    <svg class="idea-diagram" viewBox="0 0 900 260" role="img"
+         aria-label="Left: pinhole unprojection, a ray from the camera origin through a pixel on the image plane to a 3D point P, with planar depth z marked. Right: the same point written as a unit ray r scaled by a radial distance d.">
+      <defs>
+        <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3"
+                orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L8,3 z" fill="#0f7a8a"/>
+        </marker>
+        <marker id="arrowgrey" markerWidth="9" markerHeight="9" refX="7" refY="3"
+                orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L8,3 z" fill="#bac4ce"/>
+        </marker>
+      </defs>
+
+      <!-- left: pinhole unprojection -->
+      <polygon points="150,40 250,72 250,230 150,198"
+               fill="#eaedf0" stroke="#8a94a0" stroke-width="2"/>
+      <line x1="35" y1="168" x2="300" y2="168" stroke="#8a94a0" stroke-width="1.6"
+            stroke-dasharray="6 5"/>
+      <line x1="300" y1="52" x2="300" y2="168" stroke="#8a94a0" stroke-width="1.6"
+            stroke-dasharray="6 5"/>
+      <polyline points="286,168 286,154 300,154" fill="none" stroke="#8a94a0" stroke-width="1.6"/>
+      <line x1="35" y1="168" x2="292" y2="56" stroke="#0f7a8a" stroke-width="4"
+            marker-end="url(#arrow)"/>
+      <circle cx="35" cy="168" r="7" fill="#2e9cb8"/>
+      <circle cx="200" cy="96" r="6" fill="#2e9cb8"/>
+      <circle cx="300" cy="52" r="8" fill="#a3123a"/>
+      <text x="146" y="84" font-size="17" font-style="italic" fill="#6b7683" text-anchor="end">(u, v)</text>
+      <text x="316" y="48" font-size="19" font-weight="600" fill="#a3123a">P</text>
+      <text x="176" y="190" font-size="17" font-style="italic" fill="#6b7683">z</text>
+      <text x="200" y="250" font-size="13" fill="#6b7683" text-anchor="middle">image plane</text>
+
+      <!-- transition -->
+      <line x1="380" y1="130" x2="440" y2="130" stroke="#bac4ce" stroke-width="9"
+            marker-end="url(#arrowgrey)"/>
+
+      <!-- right: ray and distance -->
+      <line x1="520" y1="205" x2="858" y2="48" stroke="#0f7a8a" stroke-width="5"
+            marker-end="url(#arrow)"/>
+      <circle cx="520" cy="205" r="7" fill="#2e9cb8"/>
+      <circle cx="748" cy="99" r="8" fill="#a3123a"/>
+      <text x="618" y="134" font-size="19" font-style="italic" font-weight="600" fill="#24384f">r</text>
+      <path d="M612,120 L634,110" stroke="#24384f" stroke-width="1.6" marker-end="url(#arrow)"/>
+      <text x="768" y="118" font-size="19" font-style="italic" font-weight="600" fill="#a3123a">d</text>
+      <text x="524" y="228" font-size="13" fill="#6b7683">origin</text>
+    </svg>
+
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-half">
+        $$\mathbf{P} = z \cdot \mathbf{K}^{-1}[u,\, v,\, 1]^{\top}$$
+      </div>
+      <div class="column is-half">
+        $$\mathbf{P} = d \cdot \mathbf{r}$$
+      </div>
+    </div>
+
+    <h3 class="title is-5 has-text-centered" style="margin-top:1.5rem">Decoupled training objective</h3>
+    <p class="section-lead">
+      Supervising the two predictions jointly lets a wrong ray penalise a correct distance.
+      We supervise them separately, projecting the <i>predicted</i> distance along the
+      <i>ground-truth</i> ray so that structural error is isolated.
+    </p>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-half">
+        $$\mathcal{L}_{\text{ray}} = \sum_i \big\| \hat{\mathbf{r}}_i - \mathbf{r}_i \big\|_1$$
+      </div>
+      <div class="column is-half">
+        $$\mathcal{L}_{\text{point}} = \sum_i \big\| s^{*}\hat{d}_i \cdot \mathbf{r}_i - d_i \cdot \mathbf{r}_i \big\|_1$$
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="table-wrap">
+          <table class="results">
+            <thead>
+              <tr><th>Representation, Rel&darr;</th><th>S.FoV</th><th>L.FoV</th><th>360°</th></tr>
+            </thead>
+            <tbody>
+              <tr class="ours"><td>Ray + D (ours)</td><td>4.04</td><td>6.37</td><td>5.79</td></tr>
+              <tr><td>XYZ point map</td><td>4.28</td><td>6.74</td><td>6.28</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="column">
+        <div class="table-wrap">
+          <table class="results">
+            <thead>
+              <tr><th>Point loss</th><th>Point Rel&darr;</th></tr>
+            </thead>
+            <tbody>
+              <tr class="ours"><td>P + GT ray (ours)</td><td>5.55</td></tr>
+              <tr><td>naive P</td><td>5.65</td></tr>
+              <tr><td>disjoint D + Ray</td><td>7.88</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <p class="table-note">
+      Both design choices are validated by ablation: the decoupled representation wins on
+      every camera type, and the decoupled loss gives the most accurate point clouds.
+    </p>
+  </div>
+</section>
+
+<!-- ==================================================== pipeline ======= -->
+<section class="section" style="padding-top:0">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method overview</h2>
+    <figure class="fig">
+      <img src="./assets/fig_pipeline.jpg"
+           alt="OmniPoint pipeline: image tokens plus optional intrinsic and sparse-depth tokens and learnable state embeddings enter a DINOv2 ViT-L; DPT heads predict ray and distance, a sky mask, and the global metric scale.">
+      <figcaption>
+        Image tokens + optional intrinsic / sparse-depth tokens &rarr; one DINOv2 ViT-L &rarr;
+        DPT heads for ray + distance, sky mask and metric scale.
+      </figcaption>
+    </figure>
+
+    <p class="section-lead" style="margin-bottom:0.8rem">
+      <b>Optional priors, without destabilising the backbone.</b>
+    </p>
+    <div class="takeaway">
+      <b>Input-state embeddings.</b> Learnable tokens signal which priors are active, resolving
+      the architectural ambiguity that otherwise shifts ViT feature distributions when a prior
+      is toggled on or off.
+    </div>
+    <div class="takeaway">
+      <b>Vectorised Gaussian smoothing.</b> Each sparse measurement becomes a Gaussian with
+      \(\sigma \propto\) depth, scatter-added into a dense, spatially consistent guide plus a
+      binary validity mask — raw irregular points give noisy gradients.
+      $$w(\Delta u, \Delta v) = \exp\!\left(-\frac{\Delta u^{2} + \Delta v^{2}}{2\sigma^{2}}\right)$$
+    </div>
+
+    <div class="table-wrap">
+      <table class="results">
+        <thead>
+          <tr><th>Conditioning design (sparse depth)</th><th>Rel&darr;</th><th>&delta;<sub>1</sub>&uarr;</th></tr>
+        </thead>
+        <tbody>
+          <tr class="ours"><td>Ours (full)</td><td>3.21</td><td>98.2</td></tr>
+          <tr><td>w/o Gaussian smoothing</td><td>3.80</td><td>97.5</td></tr>
+          <tr><td>w/o input-state embedding</td><td>3.38</td><td>97.7</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">
+      Trained with DINOv2 ViT-L and DPT heads on 29 labelled and 2 unlabelled datasets, on 72 A100s.
+    </p>
+  </div>
+</section>
+
+<!-- ================================================ augmentation ======= -->
+<section class="section" style="padding-top:0">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Bidirectional data augmentation</h2>
+    <p class="section-lead">
+      Ground-truth 3D for non-pinhole cameras is scarce. Rather than augmenting in 2D, we
+      bridge labelled perspective data and unlabelled omnidirectional data <b>in 3D</b>, in
+      both directions.
+    </p>
+    <figure class="fig">
+      <img src="./assets/fig_bidirec_aug.jpg"
+           alt="Bidirectional data augmentation: Perspective-to-Any synthesises fisheye and panoramic views from pinhole datasets; Any-to-Perspective pseudo-labels virtual pinhole crops of unlabelled wide field-of-view images.">
+    </figure>
+    <div class="takeaway">
+      <b>Perspective-to-Any.</b> Unproject labelled pinhole data to 3D and re-project it through
+      virtual fisheye and equirectangular cameras; a validity mask removes occlusion holes,
+      giving exact synthetic supervision where none exists.
+    </div>
+    <div class="takeaway">
+      <b>Any-to-Perspective.</b> Sample one virtual pinhole patch from unlabelled in-the-wild
+      wide-FoV images, pseudo-label it with our pinhole-strong model, and stitch it back to
+      enforce cross-camera consistency.
+    </div>
+
+    <div class="table-wrap">
+      <table class="results">
+        <thead>
+          <tr><th>P2A</th><th>A2P</th><th>360° Rel&darr;</th><th>360° &delta;<sub>1</sub>&uarr;</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>&ndash;</td><td>&ndash;</td><td>8.45</td><td>89.8</td></tr>
+          <tr><td>&#10003;</td><td>&ndash;</td><td>6.21</td><td>94.5</td></tr>
+          <tr><td>&ndash;</td><td>&#10003;</td><td>8.21</td><td>90.9</td></tr>
+          <tr class="ours"><td>&#10003;</td><td>&#10003;</td><td>5.79</td><td>95.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">
+      The two directions are complementary: together they cut 360° error from 8.45 to 5.79 Rel.
+    </p>
+  </div>
+</section>
+
+<!-- ================================================== qualitative ====== -->
+<section class="section" style="padding-top:0">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Qualitative comparisons</h2>
+    <figure class="fig">
+          <img src="./assets/fig_compare.jpg"
+               alt="Qualitative comparison on panoramic, fisheye and pinhole images against UniK3D, MoGe V2 and UniDepth V2.">
+      <figcaption>
+        Panorama (top), fisheye (middle) and pinhole (bottom). Vertical walls stay vertical
+        and the fisheye road stays straight, where UniK3D's spherical-harmonic ray field
+        bends them.
+      </figcaption>
+    </figure>
+    <figure class="fig">
+          <img src="./assets/fig_pano.jpg"
+               alt="Panorama comparison against the panorama-specialist DA squared, showing sharper thin structures and undistorted vertical lines.">
+      <figcaption>
+        Against the panorama specialist DA<sup>2</sup>: thin structures survive and
+        vertical lines stay undistorted.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================================================= quantitative ====== -->
+<section class="section" style="padding-top:0">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Quantitative comparisons</h2>
+
+    <h3 class="title is-5 has-text-centered">One model covering every output, camera and prior</h3>
+    <div class="table-wrap">
+      <table class="results">
+        <colgroup>
+          <col><col><col><col><col><col><col><col class="highlight">
+        </colgroup>
+        <thead>
+          <tr><th>Capability</th><th>DA v2</th><th>MoGe V2</th><th>Depth Pro</th>
+              <th>UniK3D</th><th>DA<sup>2</sup></th><th>PromptDA</th><th>OmniPoint</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Affine-inv. depth</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+          <tr><td>Affine-inv. points</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td></tr>
+          <tr><td>Metric points</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td></tr>
+          <tr class="rule-above"><td>Pinhole</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+          <tr><td>Fisheye</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td></tr>
+          <tr><td>360° panorama</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td></tr>
+          <tr class="rule-above"><td>Intrinsics prior</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td></tr>
+          <tr><td>Sparse-depth prior</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">A subset of Tab. 1 in the paper.</p>
+
+    <h3 class="title is-5 has-text-centered">Zero-shot relative geometry &mdash; Rel&darr; (%)</h3>
+    <div class="table-wrap">
+      <table class="results">
+        <thead>
+          <tr><th rowspan="2">Method</th><th colspan="2">S.FoV</th><th colspan="2">L.FoV</th><th colspan="2">360° Images</th></tr>
+          <tr><th>Depth</th><th>Point</th><th>Depth</th><th>Point</th><th>Depth</th><th>Point</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>UniDepth V2</td><td>4.23</td><td>6.06</td><td>7.81</td><td>18.4</td><td>19.3</td><td>102.8</td></tr>
+          <tr><td>Depth Pro</td><td>5.28</td><td>7.49</td><td>26.6</td><td>36.2</td><td>&ndash;</td><td>&ndash;</td></tr>
+          <tr><td>MoGe V1</td><td>4.05</td><td class="best">5.25</td><td>9.48</td><td>28.1</td><td>22.3</td><td>102.6</td></tr>
+          <tr><td>MoGe V2</td><td class="best">3.98</td><td>5.59</td><td>12.0</td><td>23.4</td><td>25.1</td><td>102.8</td></tr>
+          <tr><td>DA3</td><td>4.78</td><td>6.33</td><td>12.8</td><td>29.9</td><td>25.5</td><td>101.5</td></tr>
+          <tr><td>UniK3D</td><td>4.14</td><td>5.61</td><td>8.77</td><td>11.5</td><td>10.4</td><td>11.4</td></tr>
+          <tr><td>DA<sup>2</sup></td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td><td>6.65</td><td>7.30</td></tr>
+          <tr class="ours"><td>OmniPoint (ours)</td><td>4.04</td><td>5.55</td><td class="best">6.37</td><td class="best">6.66</td><td class="best">5.79</td><td class="best">5.90</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">
+      Small-FoV: 8 pinhole benchmarks &middot; Large-FoV: KITTI360 fisheye &middot;
+      360°: Stanford2D3D-S + PanoSUNCG. A subset of Tab. 2 in the paper.
+    </p>
+
+    <h3 class="title is-5 has-text-centered">Zero-shot metric depth &mdash; &delta;<sub>1</sub>&uarr; (%)</h3>
+    <div class="table-wrap">
+      <table class="results">
+        <thead>
+          <tr><th>Method</th><th>NYUv2</th><th>KITTI</th><th>ETH3D</th><th>iBims-1</th>
+              <th>DIODE</th><th>HAMMER</th><th>Mean</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>UniDepth V2</td><td>92.8</td><td class="best">95.4</td><td>69.5</td><td class="best">93.2</td><td>51.8</td><td>46.8</td><td>74.4</td></tr>
+          <tr><td>Depth Pro</td><td>91.9</td><td>38.3</td><td>32.8</td><td>81.5</td><td>37.7</td><td>63.0</td><td>57.5</td></tr>
+          <tr><td>MoGe V2</td><td class="best">96.1</td><td>62.9</td><td>90.8</td><td>83.0</td><td>66.4</td><td>65.6</td><td>77.5</td></tr>
+          <tr><td>UniK3D</td><td>94.4</td><td>93.6</td><td>83.7</td><td>92.8</td><td>73.0</td><td>58.3</td><td>82.6</td></tr>
+          <tr class="ours"><td>OmniPoint (ours)</td><td>86.2</td><td>88.0</td><td class="best">91.8</td><td>87.7</td><td class="best">73.3</td><td class="best">73.8</td><td class="best">83.5</td></tr>
+          <tr class="ours rule-above"><td>&nbsp;&nbsp;+ intrinsics</td><td>88.3</td><td>90.7</td><td>93.0</td><td>88.3</td><td>75.2</td><td>74.5</td><td>85.0</td></tr>
+          <tr class="ours"><td>&nbsp;&nbsp;+ sparse depth</td><td>98.5</td><td>98.4</td><td>94.1</td><td>99.0</td><td>98.4</td><td>99.3</td><td>98.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">
+      Bold marks the best of the image-only block; the rows below the rule add optional priors.
+      Providing sparse depth turns the same model into a densification system. Tab. 3 in the paper.
+    </p>
+  </div>
+</section>
+
+<!-- ===================================================== bibtex ======== -->
+<section class="section" id="bibtex">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3">BibTeX</h2>
+    <pre><code>@inproceedings{ye2026omnipoint,
+  title     = {OmniPoint: Universal Monocular Metric Pointcloud from Any Camera},
+  author    = {Ye, Botao and Pollefeys, Marc and Yang, Ming-Hsuan and Kundu, Abhijit},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<!-- ===================================================== footer ======== -->
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This page is built on the
+            <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> project page
+            template. Please feel free to borrow it &mdash; do keep a link to the original.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
