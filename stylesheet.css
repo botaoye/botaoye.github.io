@@ -133,3 +133,31 @@ h2 {
 span.highlight {
   background-color: #ffffd0;
 }
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Stack the fixed-width table layout on phones */
+@media screen and (max-width: 700px) {
+  table,
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: auto !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  td {
+    padding: 12px 16px !important;
+    overflow-wrap: break-word;
+  }
+
+  .name {
+    font-size: 28px;
+  }
+}
